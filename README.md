@@ -85,6 +85,92 @@ The demo includes:
 - `demo.py` - Demonstration script with examples
 - `README.md` - This file
 
+---
+
+## Recovery Simulator (`src/dna_storage_sim.py`)
+
+A separate simulation tool that models the sequencing retrieval process and verifies recovery rates against theoretical predictions from [Heckel et al. 2017 (arXiv:1705.04732)](https://arxiv.org/abs/1705.04732).
+
+### Setup
+
+```bash
+cd "dna-storage-simulator"
+python3 -m venv venv
+source venv/bin/activate
+pip install numpy matplotlib
+```
+
+### Running
+
+```bash
+# Activate the virtual environment first
+source venv/bin/activate
+
+# Basic run (default 30 M values)
+python src/dna_storage_sim.py
+
+# With beta=2 and custom M range
+python src/dna_storage_sim.py --beta 2.0 --M_values 1 2 5 10 100 1000 10000 100000
+
+# With reliability check
+python src/dna_storage_sim.py --beta 2.0 --target_recovery 0.60
+
+# Find optimal coverage c* for a given cost ratio
+python src/dna_storage_sim.py --beta 2.0 --target_recovery 0.60 --find_c_star --q 10000
+
+# Full q-sweep with design recommendation plots
+python src/dna_storage_sim.py --beta 2.0 --target_recovery 0.60 \
+  --q_values 1000 10000 100000 --q_output q_sweep.csv
+
+# Save simulation results to CSV
+python src/dna_storage_sim.py --beta 2.0 --output results.csv
+```
+
+### CLI Options
+
+| Flag | Default | Description |
+|---|---|---|
+| `--M_values` | 30 log-spaced points | List of M values (number of unique strands) |
+| `--c` | 1.0 | Coverage depth (reads per unique strand) |
+| `--beta` | 1.0 | Strand-length factor: L = beta × log₂(M); use > 1 |
+| `--trials` | 50 | Independent simulation trials per M value |
+| `--mode` | `per_unique` | `per_unique` (N=c×M) or `per_physical` (N=c×M×DUP) |
+| `--q` | 10000 | Synthesis-to-sequencing cost ratio |
+| `--target_recovery` | None | Reliability threshold: mean − 2×SE ≥ target |
+| `--find_c_star` | off | Search for the cost-minimising coverage c* |
+| `--q_values` | None | Sweep multiple q values and generate design plots |
+| `--q_output` | `q_sweep.csv` | Output CSV for q-sweep results |
+| `--output` | None | Output CSV for main simulation sweep |
+
+### Model
+
+- **M** unique strands, each duplicated **DUP=10** times before sequencing
+- Each read samples a strand uniformly at random (equivalent to sampling a unique strand ID in [0, M))
+- Fraction recovered: `Q/M` where Q = number of distinct strand IDs seen
+- Theoretical limit (Heckel et al., Theorem 1): `1 − e^{−c}`
+
+### Cost Model (Heckel et al. 2017)
+
+| Symbol | Formula | Meaning |
+|---|---|---|
+| `Rs` | `(1 − e^{−c})(1 − 1/β)` | Bits stored per nucleotide synthesized |
+| `Rr` | `Rs / c` | Bits recovered per nucleotide sequenced |
+| `cost` | `q/Rs + 1/Rr` | Cost per stored bit |
+
+For q = 10,000 (typical), the optimal coverage is c* ≈ 9.2.
+
+### File Structure
+
+```
+dna-storage-simulator/
+├── src/
+│   ├── dna_storage_sim.py   # Simulation engine and CLI
+│   └── cost_model.py        # Theoretical cost model (Rs, Rr, cost)
+├── plots/                   # Output plots (PNG)
+├── venv/                    # Python virtual environment
+└── README.md
+```
+
 ## Parameters
 
 ### DNAStorageSimulator(num_molecules, molecule_length)
