@@ -204,9 +204,6 @@ def plot_results(csv_rows: list, limit: float, beta: float, mode: str, c: float,
     fig, ax = plt.subplots()
     ax.errorbar(Ms, mean_Q, yerr=se_Q, fmt="o-", capsize=4, label="Simulated")
     ax.axhline(limit, color="red", linestyle="--", label=f"Theory = {limit:.4f}")
-    if target_recovery is not None:
-        ax.axhline(target_recovery, color="orange", linestyle=":",
-                   label=f"Target = {target_recovery}")
     ax.set_xscale("log")
     ax.set_xlabel("M (number of unique strands)")
     ax.set_ylabel("Fraction of unique strands recovered")
@@ -220,9 +217,9 @@ def plot_results(csv_rows: list, limit: float, beta: float, mode: str, c: float,
 
     # --- Plot 3: Storage rate (per physical strand) vs M ---
     fig, ax = plt.subplots()
-    ax.plot(Ms, mean_Rp, "^--", color="tab:orange", label="Rs_physical (per physical)")
+    ax.plot(Ms, mean_Rp, "o-", color="tab:blue", label="Rs_physical (per physical)")
     theory_Rp = [limit * (1 - 1 / beta) / DUP] * len(Ms)
-    ax.plot(Ms, theory_Rp, "r:", label=f"Theory Rs_physical = {theory_Rp[0]:.4f}")
+    ax.plot(Ms, theory_Rp, "--", color="red", label=f"Theory Rs_physical = {theory_Rp[0]:.4f}")
     ax.set_xscale("log")
     ax.set_xlabel("M (number of unique strands)")
     ax.set_ylabel("Storage rate (bits per nucleotide synthesized)")
