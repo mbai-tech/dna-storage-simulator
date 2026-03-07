@@ -70,18 +70,3 @@ Based on Heckel et al. 2017, Section 4:
 
 For q = 10,000, the optimal coverage minimizing cost is **c* ≈ 9.2**.
 
-## File Structure
-
-```
-dna-storage-simulator/
-├── src/
-│   ├── dna_storage_sim.py   # Recovery simulator and CLI
-│   └── cost_model.py        # Theoretical cost model (Rs, Rr, cost, c*)
-├── plots/                   # Output plots (PNG)
-│   ├── fraction_recovered.png
-│   ├── storage_rate.png
-│   ├── design_c_star_vs_q.png
-│   └── design_cost_vs_q.png
-├── q_sweep.csv              # q-sweep output
-└── venv/
-```
