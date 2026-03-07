@@ -15,6 +15,7 @@ where:
 """
 
 import math
+import numpy as np
 
 
 def Rs_theory(c: float, beta: float) -> float:
@@ -61,3 +62,35 @@ def cost_theory(c: float, q: float, beta: float) -> float:
         return math.inf
     rr = Rr_theory(c, beta)
     return q / rs + 1 / rr
+
+
+def optimal_c_theory(q: float, beta: float,
+                     c_min: float = 0.01, c_max: float = 50.0,
+                     n_points: int = 10000) -> float:
+    """
+    Find the coverage c* that minimises cost_theory(c, q, beta) analytically.
+
+    The cost simplifies to (q + c) / (1 - e^{-c}) up to the constant factor
+    (1 - 1/beta), so c* depends only on q (not on beta or M).  There is no
+    closed-form solution, so we use a fine numerical grid over [c_min, c_max].
+
+    The optimality condition is  e^c = q + c + 1  (from d/dc cost = 0), which
+    has a unique solution for q > 0.  For q=10,000 this gives c* ≈ 9.2,
+    matching the paper (Section 4).
+
+    Args:
+        q        : synthesis-to-sequencing cost ratio
+        beta     : strand-length scaling factor (must be > 1)
+        c_min    : lower bound of search grid
+        c_max    : upper bound of search grid
+        n_points : number of grid points
+
+    Returns:
+        c* as a float, or math.nan if beta <= 1 (no positive rate achievable).
+    """
+    if beta <= 1:
+        return math.nan
+
+    c_grid = np.linspace(c_min, c_max, n_points)
+    costs  = (q + c_grid) / (1 - np.exp(-c_grid))   # (1-1/beta) cancels in argmin
+    return float(c_grid[np.argmin(costs)])

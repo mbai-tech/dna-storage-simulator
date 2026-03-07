@@ -198,10 +198,7 @@ def plot_results(csv_rows: list, limit: float, beta: float, mode: str, c: float,
     Ms            = [r["M"]                for r in csv_rows]
     mean_Q        = [r["mean_Q_over_M"]    for r in csv_rows]
     se_Q          = [r["se_Q_over_M"]      for r in csv_rows]
-    mean_Rs       = [r["mean_Rs"]          for r in csv_rows]
-    se_Rs         = [r["se_Rs"]            for r in csv_rows]
     mean_Rp       = [r["mean_Rs_physical"] for r in csv_rows]
-    theory_Rs     = [limit * (1 - 1 / beta)] * len(Ms)
 
     # --- Plot 1: Fraction recovered vs M ---
     fig, ax = plt.subplots()
@@ -221,21 +218,21 @@ def plot_results(csv_rows: list, limit: float, beta: float, mode: str, c: float,
     plt.close(fig)
     print(f"Saved {plots_dir}/fraction_recovered.png")
 
-    # --- Plot 2: Storage rates vs M ---
+    # --- Plot 3: Storage rate (per physical strand) vs M ---
     fig, ax = plt.subplots()
-    ax.errorbar(Ms, mean_Rs, yerr=se_Rs, fmt="s-", capsize=4, label="Rs (per unique)")
-    ax.plot(Ms, mean_Rp, "^--", label="Rs_physical (per physical)")
-    ax.plot(Ms, theory_Rs, "r:", label=f"Theory Rs = {theory_Rs[0]:.4f}")
+    ax.plot(Ms, mean_Rp, "^--", color="tab:orange", label="Rs_physical (per physical)")
+    theory_Rp = [limit * (1 - 1 / beta) / DUP] * len(Ms)
+    ax.plot(Ms, theory_Rp, "r:", label=f"Theory Rs_physical = {theory_Rp[0]:.4f}")
     ax.set_xscale("log")
     ax.set_xlabel("M (number of unique strands)")
-    ax.set_ylabel("Storage rate")
-    ax.set_title(f"Storage Rate vs M  [mode={mode}, c={c}, beta={beta}, DUP={DUP}]")
+    ax.set_ylabel("Storage rate (bits per nucleotide synthesized)")
+    ax.set_title(f"Storage Rate (Physical) vs M  [mode={mode}, c={c}, beta={beta}, DUP={DUP}]")
     ax.legend()
     ax.grid(True, which="both", linestyle=":", alpha=0.5)
     fig.tight_layout()
-    fig.savefig(os.path.join(plots_dir, "storage_rate.png"), dpi=150)
+    fig.savefig(os.path.join(plots_dir, "storage_rate_physical.png"), dpi=150)
     plt.close(fig)
-    print(f"Saved {plots_dir}/storage_rate.png")
+    print(f"Saved {plots_dir}/storage_rate_physical.png")
 
 
 def plot_design_recommendations(q_rows: list, target_recovery: float,
