@@ -1,26 +1,3 @@
-"""
-DNA Storage Recovery Simulator
-
-Simulates recovery of unique DNA strands during sequencing and verifies
-that the fraction recovered approaches a theoretical limit as M grows.
-
-Model:
-  - M unique DNA strands, each duplicated DUP times before sequencing
-  - Reads sample strands uniformly at random from the physical pool
-  - We measure how many unique strands are recovered
-
-Modes:
-  per_unique  : N = c * M reads (coverage relative to unique strands)
-  per_physical: N = c * M * DUP reads (coverage relative to physical pool)
-
-Theoretical expected fraction recovered:
-  P(a given unique strand is missed) = (1 - 1/M)^N  ~  e^(-N/M)
-  E[fraction recovered]              = 1 - e^(-N/M)
-
-  per_unique   -> 1 - e^(-c)
-  per_physical -> 1 - e^(-c * DUP)
-"""
-
 import argparse
 import csv
 import math

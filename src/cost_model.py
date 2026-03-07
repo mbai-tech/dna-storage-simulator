@@ -1,19 +1,3 @@
-"""
-DNA Storage Cost Model — Heckel et al., arXiv:1705.04732v1
-
-Theoretical rates and cost formulae derived from the paper's main results.
-
-  Rs_theory  = (1 - e^{-c}) * (1 - 1/beta)          [Theorem 1, eq. 3]
-  Rr_theory  = Rs_theory / c                          [Corollary 1: Rs = c * Rr]
-  cost       = q / Rs + 1 / Rr                        [Section 4]
-             = (q + c) / ((1 - e^{-c}) * (1 - 1/beta))
-
-where:
-  c    = N / M  coverage depth (reads per unique strand)
-  beta = L / log2(M)  strand-length scaling factor
-  q    = synthesis cost / sequencing cost  (~10,000-100,000 in practice)
-"""
-
 import math
 import numpy as np
 
